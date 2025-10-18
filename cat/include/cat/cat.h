@@ -18,10 +18,12 @@
 *   \brief Main include.
 */
 
-
 #ifndef _CAT_H_
 #define _CAT_H_
 
+
+#include "cat/cat_platform.h"
+#include "cat/cat_console.h"
 
 
 #endif // #ifndef _CAT_H_

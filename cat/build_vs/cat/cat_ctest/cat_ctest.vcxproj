@@ -90,13 +90,14 @@
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zc:__cplusplus /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4668;4710;4711;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,13 +112,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zc:__cplusplus /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4668;4710;4711;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,13 +132,14 @@
     <ClCompile>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zc:__cplusplus /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4668;4710;4711;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,13 +154,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN$(PlatformArchitecture);_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions);$(Configuration.replace(Debug,_DEBUG).replace(Release,NDEBUG))</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zc:__cplusplus /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4668;4710;4711;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

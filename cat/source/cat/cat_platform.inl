@@ -15,19 +15,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /*
-* cat.c
-* Main test file.
+* cat_platform.inl
+* Platform configuration implementation include.
 */
 
-#include "cat/cat.h"
+#if (!defined _CAT_PLATFORM_INL_ && defined _CAT_PLATFORM_H_)
+#define _CAT_PLATFORM_INL_
 
 
-extern void cat_console_test(void);
+#include <assert.h>
 
 
-int cat_test_all(int const argc, char const* const argv[])
-{
-    unused2(argc, argv);
-    cat_console_test();
-    return 0;
-}
+#define require_or_bail(expression)  if (!(expression)) return
+#define assert_or_bail(expression)   assert(expression);require_or_bail(expression)
+#define assert_or_unused(expression) assert(expression);unused(expression)
+
+
+#define cat_implementation_begin cat_interface_begin
+#define cat_implementation_end   cat_interface_end
+
+
+#define cat_impl
+
+
+#endif // #if (!defined _CAT_PLATFORM_INL_ && defined _CAT_PLATFORM_H_)

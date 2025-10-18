@@ -15,19 +15,31 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /*
-* cat.c
-* Main test file.
+* cat_console_win.c
+* Console implementation for Windows.
 */
 
-#include "cat/cat.h"
+#include "cat/cat_console.h"
+#include "cat/cat_platform.inl"
 
 
-extern void cat_console_test(void);
+cat_implementation_begin;
 
 
-int cat_test_all(int const argc, char const* const argv[])
+#ifdef _WIN32
+#include <io.h>
+#include <stdio.h>
+#include <Windows.h>
+
+
+
+#endif // #ifdef _WIN32
+
+
+void cat_console_test(void)
 {
-    unused2(argc, argv);
-    cat_console_test();
-    return 0;
+    cat_console_draw_test_patch();
 }
+
+
+cat_implementation_end;

@@ -22,9 +22,15 @@
 #include "cat/cat.h"
 
 
+extern int cat_test_all(int const argc, char const* const argv[]);
+
+
 int main(int const argc, char const* const argv[])
 {
-	(void)argc;
-	(void)argv;
-	return 0;
+    int result = 0;
+#ifdef _WIN32
+    _set_error_mode(_OUT_TO_MSGBOX);
+#endif // #ifdef _WIN32
+    result |= cat_test_all(argc, argv);
+    return result;
 }
