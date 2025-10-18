@@ -26,6 +26,9 @@
 #include <string.h>
 
 
+cat_implementation_begin;
+
+
 typedef struct cat_malloc_metadata_s
 {
 #ifdef _WIN32
@@ -153,3 +156,6 @@ cat_impl bool cat_memory_dealloc(void* const p_block)
 
     return false;
 }
+
+
+cat_implementation_end;
