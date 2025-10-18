@@ -15,22 +15,38 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /*
-* cat_ctest_main.c
-* Console program entry point.
+* cat_wtest_main.c
+* Windowed program entry point.
 */
 
 #include "cat/cat.h"
 
 
+#ifdef _WIN32
+#include <Windows.h>
+
+
 extern int cat_test_all(int const argc, char const* const argv[]);
 
 
-int main(int const argc, char const* const argv[])
+int WINAPI WinMain(
+    _In_     HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_     LPSTR     lpCmdLine,
+    _In_     int       nShowCmd
+)
 {
     int result = 0;
-#ifdef _WIN32
+    unused2(hInstance, hPrevInstance);
+    unused(nShowCmd);
     _set_error_mode(_OUT_TO_MSGBOX);
-#endif // #ifdef _WIN32
-    result |= cat_test_all(argc, argv);
+    cat_console_create();
+    result |= cat_test_all(1, &lpCmdLine);
+    cat_console_destroy();
     return result;
 }
+
+
+#else // #ifdef _WIN32
+#error Unsupported platform.
+#endif // #else // #ifdef _WIN32
