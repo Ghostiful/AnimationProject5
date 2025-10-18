@@ -84,8 +84,11 @@ cat_noinl void cat_platform_time_test(void)
     cat_time_t const volatile t0 = cat_platform_time();
     cat_time_t volatile dt = 0;
     cat_platform_sleep(t_rate);
-    dt = cat_platform_time() - t0;
-    printf("\nPlatform time: \n    t_rate=%"PRIu32" t0=%"PRIi64" dt=%"PRIi64, t_rate, t0, dt);
+    {
+        dt = cat_platform_time() - t0;
+        printf("\nPlatform time: \n    t_rate=%"PRIu32" t0=%"PRIi64" dt=%"PRIi64, t_rate, t0, dt);
+    }
+    cat_platform_sleep(t_rate);
 }
 
 
