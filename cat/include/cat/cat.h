@@ -23,7 +23,8 @@
 
 
 #include "cat/cat_platform.h"
-#include "cat/cat_console.h"
+#include "cat/utility/cat_console.h"
+#include "cat/utility/cat_platform_time.h"
 
 
 #endif // #ifndef _CAT_H_

@@ -168,12 +168,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\cat\cat.c" />
-    <ClCompile Include="..\..\..\source\cat\cat_console_win.c" />
+    <ClCompile Include="..\..\..\source\cat\utility\cat_console.c" />
+    <ClCompile Include="..\..\..\source\cat\utility\cat_platform_time.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\cat\cat.h" />
-    <ClInclude Include="..\..\..\include\cat\cat_console.h" />
     <ClInclude Include="..\..\..\include\cat\cat_platform.h" />
+    <ClInclude Include="..\..\..\include\cat\utility\cat_console.h" />
+    <ClInclude Include="..\..\..\include\cat\utility\cat_platform_time.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\source\cat\cat_platform.inl" />

@@ -47,6 +47,12 @@
 #define cat_interface_end   
 #endif // #else // #ifdef __cplusplus
 
+#ifdef _WIN32
+#define cat_noinl __declspec(noinline)
+#else // #ifdef _WIN32
+#define cat_noinl __attribute__((noinline))
+#endif // #else // #ifdef _WIN32
+
 #define cat_decl
 
 #define _tokcat(x,y) x##y

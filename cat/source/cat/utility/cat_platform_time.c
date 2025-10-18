@@ -15,21 +15,31 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /*
-* cat.c
-* Main test file.
+* cat_platform_time.c
+* Platform time implementation.
 */
 
-#include "cat/cat.h"
+#include "cat/utility/cat_platform_time.h"
+#include "cat/cat_platform.inl"
 
 
-extern void cat_console_test(void);
-extern void cat_platform_time_test(void);
+#define CAT_PLATFORM_TIME_USE_WIN
 
 
-cat_noinl int cat_test_all(int const argc, char const* const argv[])
-{
-    unused2(argc, argv);
-    cat_console_test();
-    cat_platform_time_test();
-    return 0;
-}
+#if (defined _WIN32 && defined CAT_PLATFORM_TIME_USE_WIN)
+#define CAT_PLATFORM_TIME_WIN 1
+#endif // #if (defined _WIN32 && defined CAT_PLATFORM_TIME_USE_WIN)
+
+#ifdef CAT_PLATFORM_TIME_WIN
+#include <Windows.h>
+#else // #ifdef CAT_PLATFORM_TIME_WIN
+#include <time.h>
+#define NS_PER_S 1000000000
+#endif // #else // #ifdef CAT_PLATFORM_TIME_WIN
+
+
+cat_implementation_begin;
+
+
+
+cat_implementation_end;
