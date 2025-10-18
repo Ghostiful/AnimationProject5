@@ -81,6 +81,11 @@
 //! \param y Second expression.
 #define unused2(x,y) unused(x);unused(y)
 
+//! \def array_count
+//! \brief Get element count in raw array; does not apply to general pointers.
+//! \param a Raw array.
+#define array_count(a) (sizeof(a)/sizeof(*a))
+
 
 //! \typedef ptr_t
 //! \brief Alias for type-agnostic pointer.

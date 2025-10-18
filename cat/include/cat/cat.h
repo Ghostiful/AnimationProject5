@@ -23,8 +23,8 @@
 
 
 #include "cat/cat_platform.h"
+#include "cat/utility/cat_time.h"
 #include "cat/utility/cat_console.h"
-#include "cat/utility/cat_platform_time.h"
 #include "cat/utility/cat_memory.h"
 #include "cat/utility/cat_thread.h"
 

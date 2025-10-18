@@ -15,11 +15,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /*
-* cat_platform_time.c
-* Platform time implementation.
+* cat_time.c
+* Time implementation.
 */
 
-#include "cat/utility/cat_platform_time.h"
+#include "cat/utility/cat_time.h"
 #include "cat/cat_platform.inl"
 
 
@@ -77,16 +77,19 @@ cat_impl void cat_platform_sleep(cat_time_t const duration)
 
 #include <stdio.h>
 #include <inttypes.h>
+#include "cat/utility/cat_console.h"
 
-cat_noinl void cat_platform_time_test(void)
+
+cat_noinl void cat_time_test(void)
 {
     cat_time_rate_t const volatile t_rate = cat_platform_time_rate();
     cat_time_t const volatile t0 = cat_platform_time();
     cat_time_t volatile dt = 0;
+
     cat_platform_sleep(t_rate);
     {
         dt = cat_platform_time() - t0;
-        printf("\nPlatform time: \n    t_rate=%"PRIu32" t0=%"PRIi64" dt=%"PRIi64, t_rate, t0, dt);
+        printf("\nTime: \n    platform rate=%"PRIu32" t0=%"PRIi64" dt=%"PRIi64, t_rate, t0, dt);
     }
     cat_platform_sleep(t_rate);
 }

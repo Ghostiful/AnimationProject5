@@ -14,12 +14,12 @@
 /// limitations under the License.
 ////////////////////////////////////////////////////////////////////////////////
 
-/*! \file cat_platform_time.h
-*   \brief Platform time interface.
+/*! \file cat_time.h
+*   \brief Time interface.
 */
 
-#ifndef _CAT_PLATFORM_TIME_H_
-#define _CAT_PLATFORM_TIME_H_
+#ifndef _CAT_TIME_H_
+#define _CAT_TIME_H_
 
 
 #include "cat/cat_platform.h"
@@ -56,4 +56,4 @@ cat_decl void cat_platform_sleep(cat_time_t const duration);
 cat_interface_end;
 
 
-#endif // #ifndef _CAT_PLATFORM_TIME_H_
+#endif // #ifndef _CAT_TIME_H_

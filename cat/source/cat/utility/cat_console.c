@@ -465,7 +465,7 @@ cat_implementation_end;
 #endif // #else // #ifdef _WIN32
 
 
-#include "cat/utility/cat_platform_time.h"
+#include "cat/utility/cat_time.h"
 
 
 cat_implementation_begin;
@@ -474,11 +474,8 @@ cat_implementation_begin;
 cat_noinl void cat_console_test(void)
 {
     cat_console_clear();
-    {
-        cat_console_draw_test_patch();
-        cat_platform_sleep(cat_platform_time_rate());
-    }
-    cat_console_clear();
+    cat_console_draw_test_patch();
+    cat_platform_sleep(cat_platform_time_rate());
 }
 
 

@@ -28,12 +28,6 @@
 cat_interface_begin;
 
 
-//! \def array_count
-//! \brief Get element count in raw array; does not apply to general pointers.
-//! \param a Raw array.
-#define array_count(a) (sizeof(a)/sizeof(*a))
-
-
 //! \fn cat_memset
 //! \brief Set all bytes in block to a specified byte value.
 //! \param p_block Pointer to block.

@@ -66,6 +66,8 @@ cat_impl bool cat_thread_rename(cstr_t const name)
     bool result = false;
     assert_or_bail(name) false;
 #ifdef _WIN32
+    // Thread rename: 
+    // https://learn.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2015/debugger/how-to-set-a-thread-name-in-native-code?view=vs-2015&redirectedfrom=MSDN
     {
 #pragma warning(push)
 #pragma warning(disable: 4820 6320 6322)// suppress warnings
@@ -99,6 +101,62 @@ cat_impl bool cat_thread_rename(cstr_t const name)
     // Not supported.
 #endif // #else // #ifdef _WIN32
     return result;
+}
+
+
+#include <stdio.h>
+#include <inttypes.h>
+#include "cat/utility/cat_time.h"
+#include "cat/utility/cat_console.h"
+
+
+static int cat_thread_test_func(int const argc, void* const argv[])
+{
+    int result = 0;
+    thrd_t const* p_thrd = NULL;
+    cstr_t thrd_name = NULL;
+    int print_count = 0;
+
+    assert_or_bail((argc == 3) && argv && argv[0] && argv[1] && argv[2]) 1;
+    p_thrd = (thrd_t const*)argv[0];
+    thrd_name = (cstr_t)argv[1];
+    print_count = *(int const*)argv[2];
+    result |= !cat_thread_rename(thrd_name);
+    printf("\nThread: \n    thrd_name=\"%s\" id=%"PRIu32, thrd_name, p_thrd->_Tid);
+    while ((print_count > 0) != 0)
+    {
+        if ((print_count % 1000) == 0)
+            printf("\n    print_count=%"PRIi32, print_count);
+        --print_count;
+    }
+    return result;
+}
+
+static int thrd_test_func(void* const arg)
+{
+    unused(arg);
+    cat_platform_sleep(cat_platform_time_rate());
+    return 0;
+}
+
+cat_noinl void cat_thread_test(void)
+{
+    thrd_t thrd = { 0 };
+    int thrd_res = 0;
+    int print_count = 10000;
+    void* const args[] = {
+        &thrd,       // thread object
+        __FUNCTION__,// thread name
+        &print_count,// print count
+    };
+    unused(args);
+
+    cat_console_clear();
+    //thrd_res = cat_thrd_create(&thrd, &cat_thread_test_func, array_count(args), args);
+    thrd_create(&thrd, &thrd_test_func, NULL);
+    assert_or_bail(thrd_res == thrd_success);
+    thrd_join(thrd, &thrd_res);
+    cat_platform_sleep(cat_platform_time_rate());
 }
 
 

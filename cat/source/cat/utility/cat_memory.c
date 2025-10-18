@@ -29,14 +29,17 @@
 cat_implementation_begin;
 
 
+#ifdef CAT_DEBUG
 typedef struct cat_malloc_metadata_s
 {
 #ifdef _WIN32
+    //****TO-DO-MEMORY: fill in this structure.
     uint32_t reserved;
 #else // #ifdef _WIN32
     uint32_t reserved;
 #endif // #else // #ifdef _WIN32
 } cat_malloc_metadata_t;
+#endif // #ifdef CAT_DEBUG
 
 
 cat_impl void* cat_memset(void* const p_block, uint8_t const value, size_t const set_size)
@@ -155,6 +158,30 @@ cat_impl bool cat_memory_dealloc(void* const p_block)
     //****TO-DO-MEMORY: safely release block reserved above.
 
     return false;
+}
+
+
+#include <stdio.h>
+#include <inttypes.h>
+#include "cat/utility/cat_time.h"
+#include "cat/utility/cat_console.h"
+
+
+cat_noinl void cat_memory_test(void)
+{
+    bool result = false;
+    void* block_lh = cat_malloc(1024);
+    void* block_rh = cat_malloc(2048);
+
+    cat_console_clear();
+    cat_memset(block_lh, 0xFF, 1024);
+    cat_memclr(block_rh, 2048);
+    result = cat_memcmp(block_lh, block_rh, 2048);
+    printf("\nMemory: \n    Blocks are equal: %"PRIi32, (int32_t)result);
+    cat_memcpy(block_lh, block_rh, 1024);
+    result = cat_memcmp(block_lh, block_rh, 1024);
+    printf("\nMemory: \n    Blocks are equal: %"PRIi32, (int32_t)result);
+    cat_platform_sleep(cat_platform_time_rate());
 }
 
 

@@ -22,14 +22,18 @@
 #include "cat/cat.h"
 
 
+extern void cat_time_test(void);
 extern void cat_console_test(void);
-extern void cat_platform_time_test(void);
+extern void cat_memory_test(void);
+extern void cat_thread_test(void);
 
 
 cat_noinl int cat_test_all(int const argc, char const* const argv[])
 {
     unused2(argc, argv);
+    cat_time_test();
     cat_console_test();
-    cat_platform_time_test();
+    cat_memory_test();
+    cat_thread_test();
     return 0;
 }
