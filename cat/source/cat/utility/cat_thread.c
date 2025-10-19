@@ -33,32 +33,20 @@
 cat_implementation_begin;
 
 
-typedef struct cat_thrd_param_s
+static int cat_thrd_internal_entry_point(cat_thread_params_t const* const p_thread_params)
 {
-    cat_thread_func_t thread_func;
-    void* const* argv;
-    size_t argc;
-} cat_thrd_param_t;
-
-static int cat_thrd_internal_entry_point(cat_thrd_param_t const* const p_params)
-{
-    assert_or_bail(p_params) 0;
-    assert_or_bail(p_params->thread_func) 0;
-    assert_or_bail((p_params->argc == 0) || p_params->argv) 0;
-    return p_params->thread_func((int)p_params->argc, p_params->argv);
+    assert_or_bail(p_thread_params) 1;
+    assert_or_bail(p_thread_params->func) 1;
+    assert_or_bail((p_thread_params->argc == 0) || p_thread_params->argv) 1;
+    return p_thread_params->func(p_thread_params->argc, p_thread_params->argv);
 }
 
 
-cat_impl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_func_t const thread_func, uint8_t const argc, void* const argv[])
+cat_impl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params)
 {
-    cat_thrd_param_t params = { 0 };
     assert_or_bail(p_thread_out) thrd_error;
-    assert_or_bail(thread_func) thrd_error;
-    assert_or_bail((argc == 0) || argv) thrd_error;
-    params.thread_func = thread_func;
-    params.argv = argv;
-    params.argc = argc;
-    return thrd_create(p_thread_out, cat_thrd_internal_entry_point, &params);
+    assert_or_bail(p_thread_params) thrd_error;
+    return thrd_create(p_thread_out, &cat_thrd_internal_entry_point, (void*)p_thread_params);
 }
 
 cat_impl bool cat_thread_rename(cstr_t const name)
@@ -110,7 +98,7 @@ cat_impl bool cat_thread_rename(cstr_t const name)
 #include "cat/utility/cat_console.h"
 
 
-static int cat_thread_test_func(int const argc, void* const argv[])
+static int cat_thread_test_func(size_t const argc, void* const argv[])
 {
     int result = 0;
     thrd_t const* p_thrd = NULL;
@@ -135,6 +123,7 @@ static int cat_thread_test_func(int const argc, void* const argv[])
 static int thrd_test_func(void* const arg)
 {
     unused(arg);
+    printf("\n%s", __FUNCTION__);
     cat_platform_sleep(cat_platform_time_rate());
     return 0;
 }
@@ -149,13 +138,21 @@ cat_noinl void cat_thread_test(void)
         __FUNCTION__,// thread name
         &print_count,// print count
     };
-    unused(args);
+    cat_thread_params_t const params = {
+        &cat_thread_test_func, array_count(args), args
+    };
 
     cat_console_clear();
-    //thrd_res = cat_thrd_create(&thrd, &cat_thread_test_func, array_count(args), args);
-    thrd_create(&thrd, &thrd_test_func, NULL);
-    assert_or_bail(thrd_res == thrd_success);
-    thrd_join(thrd, &thrd_res);
+    {
+        thrd_res = thrd_create(&thrd, &thrd_test_func, NULL);
+        assert_or_bail(thrd_res == thrd_success);
+        thrd_join(thrd, &thrd_res);
+    }
+    {
+        thrd_res = cat_thrd_create(&thrd, &params);
+        assert_or_bail(thrd_res == thrd_success);
+        thrd_join(thrd, &thrd_res);
+    }
     cat_platform_sleep(cat_platform_time_rate());
 }
 

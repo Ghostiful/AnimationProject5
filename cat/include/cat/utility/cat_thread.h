@@ -32,17 +32,24 @@ cat_interface_begin;
 
 //! \typedef cat_thread_func_t
 //! \brief Thread entry point function type.
-typedef int(*cat_thread_func_t)(int const, void* const[]);
+typedef int(*cat_thread_func_t)(size_t const, void* const[]);
+
+//! \struct cat_thread_params_s
+//! \brief Thread parameters container.
+typedef struct cat_thread_params_s
+{
+    cat_thread_func_t func;//< Thread function.
+    size_t            argc;//< Function argument count.
+    void* const*      argv;//< Function argument vector.
+} cat_thread_params_t;
 
 
 //! \fn cat_thrd_create
-//! \brief Create a new thread.
+//! \brief Create a new thread with parameter list.
 //! \param p_thread_out Pointer to result standard thread.
-//! \param thread_func Thread entry point function.
-//! \param argc Number of arguments in function argument vector.
-//! \param argv Function argument vector.
+//! \param p_thread_params Pointer to thread parameters container.
 //! \return Thread handle; zero if failed.
-cat_decl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_func_t const thread_func, uint8_t const argc, void* const argv[]);
+cat_decl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params);
 
 //! \fn cat_thread_rename
 //! \brief Rename current thread.
