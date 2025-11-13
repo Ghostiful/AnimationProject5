@@ -142,17 +142,18 @@ cat_impl bool cat_memory_pool_create(size_t const pool_size)
     assert_or_bail(pool_size) false;
 
     //****TO-DO-MEMORY: allocate and initialize pool.
+
     poolSize = pool_size;
     memoryUsed = 0;
     blockNum = 0;
     memoryPool = malloc(poolSize);
 
     head = (cat_malloc_metadata_t*)memoryPool;
-    /*head->p_next = NULL;
+    head->p_next = NULL;
     head->p_prev = NULL;
-    head->size = pool_size;
-    head->sequence = 0;
-    head->mode = 0;*/
+
+    if (memoryPool != NULL)
+        return true;
 
     return false;
 }
@@ -192,7 +193,8 @@ cat_impl void* cat_memory_alloc(size_t const block_size)
     }
 
     // Create new block
-    cat_malloc_metadata_t* newBlock;
+    cat_malloc_metadata_t* newBlock = current;
+    current->p_next = newBlock;
 
     if (newBlock == head)
         newBlock->p_prev = NULL;
@@ -204,7 +206,7 @@ cat_impl void* cat_memory_alloc(size_t const block_size)
 
     memoryUsed += block_size;
 
-    return NULL;
+    return (void*)newBlock;
 }
 
 cat_impl bool cat_memory_dealloc(void* const p_block)
@@ -212,6 +214,33 @@ cat_impl bool cat_memory_dealloc(void* const p_block)
     assert_or_bail(p_block) false;
 
     //****TO-DO-MEMORY: safely release block reserved above.
+
+    cat_malloc_metadata_t* blockToDealloc = head;
+
+    while (blockToDealloc->p_next != NULL)
+    {
+        // Get metadata
+        if (blockToDealloc == (cat_malloc_metadata_t*)p_block)
+        {
+            // Resolve block before
+            if (blockToDealloc->p_prev == NULL)
+            {
+                head = blockToDealloc->p_next;
+            }
+            else
+            {
+                blockToDealloc->p_prev->p_next = blockToDealloc->p_next;
+            }
+
+            // Resolve block after
+            if (blockToDealloc->p_next != NULL)
+            {
+                blockToDealloc->p_next->p_prev = blockToDealloc->p_prev;
+            }
+        }
+
+        blockToDealloc = blockToDealloc->p_next;
+    }
 
     return false;
 }
@@ -245,19 +274,23 @@ cat_noinl void cat_memory_test(void)
     cat_free(block_rh);
     block_rh = NULL;
 
+    bool pool = cat_memory_pool_create(1024);
+    if (!pool)
     {
-        void* volatile testA = malloc(1024);
-        void* volatile testB = malloc(2028);
-        void* volatile testC = malloc(4096);
-        void* volatile testD = malloc(8192);
-
-        free(testA);
-        free(testB);
-        free(testC);
-        free(testD);
+        printf("Pool creation failed");
+        return;
     }
 
-    cat_memory_pool_create(1024);
+    void* testA = cat_memory_alloc(128);
+
+    void* testB = cat_memory_alloc(512);
+
+    cat_memory_dealloc(testA);
+
+    cat_memory_pool_destroy();
+
+    testA = NULL;
+    testB = NULL;
 }
 
 
