@@ -49,6 +49,11 @@ cat_impl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t con
     return thrd_create(p_thread_out, &cat_thrd_internal_entry_point, (void*)p_thread_params);
 }
 
+cat_impl int cat_mngr_create(thrd_t* p_thread_arr[])
+{
+
+}
+
 cat_impl bool cat_thread_rename(cstr_t const name)
 {
     bool result = false;

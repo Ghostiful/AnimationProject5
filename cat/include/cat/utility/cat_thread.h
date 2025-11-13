@@ -23,9 +23,7 @@
 
 
 #include "cat/cat_platform.h"
-
 #include <threads.h>
-
 
 cat_interface_begin;
 
@@ -43,6 +41,12 @@ typedef struct cat_thread_params_s
     void* const*      argv;//< Function argument vector.
 } cat_thread_params_t;
 
+#define MAX_THREADS 5
+typedef struct cat_thread_manager_s
+{
+    thrd_t* active[MAX_THREADS];
+    thrd_t* inactive[MAX_THREADS];
+} cat_thread_manager_t;
 
 //! \fn cat_thrd_create
 //! \brief Create a new thread with parameter list.
@@ -50,6 +54,8 @@ typedef struct cat_thread_params_s
 //! \param p_thread_params Pointer to thread parameters container.
 //! \return Thread handle; zero if failed.
 cat_decl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params);
+
+cat_decl int cat_mngr_create(thrd_t* p_thread_arr[]);
 
 //! \fn cat_thread_rename
 //! \brief Rename current thread.
