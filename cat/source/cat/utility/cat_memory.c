@@ -49,7 +49,8 @@ typedef struct cat_malloc_metadata_s
 #endif // #ifdef CAT_DEBUG
 
 static void* memoryPool;
-static size_t poolSize;
+static size_t poolSize, memoryUsed;
+static uint32_t blockNum;
 static cat_malloc_metadata_t* head = NULL;
 
 cat_impl void* cat_memset(void* const p_block, uint8_t const value, size_t const set_size)
@@ -142,13 +143,16 @@ cat_impl bool cat_memory_pool_create(size_t const pool_size)
 
     //****TO-DO-MEMORY: allocate and initialize pool.
     poolSize = pool_size;
+    memoryUsed = 0;
+    blockNum = 0;
     memoryPool = malloc(poolSize);
 
     head = (cat_malloc_metadata_t*)memoryPool;
-    head->p_next = NULL;
+    /*head->p_next = NULL;
     head->p_prev = NULL;
     head->size = pool_size;
     head->sequence = 0;
+    head->mode = 0;*/
 
     return false;
 }
@@ -159,9 +163,9 @@ cat_impl bool cat_memory_pool_destroy(void)
 
     if (memoryPool != NULL)
     {
-        free(memoryPool);
         head = NULL;
         poolSize = 0;
+        free(memoryPool);
 
         return true;
     }
@@ -174,6 +178,31 @@ cat_impl void* cat_memory_alloc(size_t const block_size)
     assert_or_bail(block_size) NULL;
 
     //****TO-DO-MEMORY: reserve block in managed pool.
+
+    // Check if enough space
+    if (block_size + memoryUsed + sizeof(cat_malloc_metadata_t) > poolSize)
+        return NULL;
+
+    cat_malloc_metadata_t* current = head;
+
+    // Get last node in list
+    while (current->p_next != NULL)
+    {
+        current = current->p_next;
+    }
+
+    // Create new block
+    cat_malloc_metadata_t* newBlock;
+
+    if (newBlock == head)
+        newBlock->p_prev = NULL;
+    else
+        newBlock->p_prev = current;
+    newBlock->p_next = NULL;
+    newBlock->size = block_size;
+    newBlock->sequence = blockNum++;
+
+    memoryUsed += block_size;
 
     return NULL;
 }
