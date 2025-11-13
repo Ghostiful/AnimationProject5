@@ -184,25 +184,18 @@ cat_impl void* cat_memory_alloc(size_t const block_size)
     if (block_size + memoryUsed + sizeof(cat_malloc_metadata_t) > poolSize)
         return NULL;
 
-    cat_malloc_metadata_t* current = head;
-
-    // Get last node in list
-    while (current->p_next != NULL)
-    {
-        current = current->p_next;
-    }
-
     // Create new block
-    cat_malloc_metadata_t* newBlock = current;
-    current->p_next = newBlock;
-
-    if (newBlock == head)
-        newBlock->p_prev = NULL;
-    else
-        newBlock->p_prev = current;
-    newBlock->p_next = NULL;
+    cat_malloc_metadata_t* newBlock = (cat_malloc_metadata_t*)((char*)memoryPool + memoryUsed);
+    
+    // Insert at head of list
+    newBlock->p_prev = NULL;
+    newBlock->p_next = head;
     newBlock->size = block_size;
     newBlock->sequence = blockNum++;
+
+    if (head != NULL)
+        head->p_prev = newBlock;
+    head = newBlock;
 
     memoryUsed += block_size;
 
@@ -237,6 +230,10 @@ cat_impl bool cat_memory_dealloc(void* const p_block)
             {
                 blockToDealloc->p_next->p_prev = blockToDealloc->p_prev;
             }
+
+            memoryUsed -= blockToDealloc->size;
+
+            return true;
         }
 
         blockToDealloc = blockToDealloc->p_next;
@@ -285,7 +282,7 @@ cat_noinl void cat_memory_test(void)
 
     void* testB = cat_memory_alloc(512);
 
-    cat_memory_dealloc(testA);
+    result = cat_memory_dealloc(testA);
 
     cat_memory_pool_destroy();
 
