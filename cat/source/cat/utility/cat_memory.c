@@ -274,20 +274,37 @@ cat_noinl void cat_memory_test(void)
     bool pool = cat_memory_pool_create(1024);
     if (!pool)
     {
-        printf("Pool creation failed");
+        printf("\nPool creation failed");
         return;
     }
+    else
+        printf("\nPool created with size 1024");
 
     void* testA = cat_memory_alloc(128);
-
     void* testB = cat_memory_alloc(512);
+    printf("\nMade block A & B of sizes 128 & 512");
+
+    /*cat_memset(testA, 1, 128);
+    cat_memset(testB, 2, 512);
+    printf("\nWrote to block A & B");*/
+
+    void* testC = cat_memory_alloc(512);
+    printf("\nTry allocate block C of size 512: %s", testC != NULL ? "Success" : "Failed");
 
     result = cat_memory_dealloc(testA);
+    printf("\nDeallocated block A: %s", result ? "Success" : "Failed");
+
+    testC = cat_memory_alloc(512);
+    printf("\nTry allocate block C of size 512: %s", testC != NULL ? "Success" : "Failed");
+
+    result = cat_memory_dealloc(testB);
+    printf("\nDeallocated block B: %s", result ? "Success" : "Failed");
+
+    result = cat_memory_dealloc(testC);
+    printf("\nDeallocated block C: %s", result ? "Success" : "Failed");
 
     cat_memory_pool_destroy();
-
-    testA = NULL;
-    testB = NULL;
+    printf("\n\nPool destroyed");
 }
 
 
