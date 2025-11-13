@@ -34,6 +34,13 @@ typedef struct cat_malloc_metadata_s
 {
 #ifdef _WIN32
     //****TO-DO-MEMORY: fill in this structure.
+    struct cat_malloc_metadata_s* p_prev;
+    struct cat_malloc_metadata_s* p_next;
+    char* file;
+    uint32_t line;
+    uint32_t mode;
+    size_t size;
+    uint32_t sequence;
     uint32_t reserved;
 #else // #ifdef _WIN32
     uint32_t reserved;
@@ -41,6 +48,9 @@ typedef struct cat_malloc_metadata_s
 } cat_malloc_metadata_t;
 #endif // #ifdef CAT_DEBUG
 
+static void* memoryPool;
+static size_t poolSize;
+static cat_malloc_metadata_t* head = NULL;
 
 cat_impl void* cat_memset(void* const p_block, uint8_t const value, size_t const set_size)
 {
@@ -129,8 +139,16 @@ cat_impl void cat_free(void* const p_block)
 cat_impl bool cat_memory_pool_create(size_t const pool_size)
 {
     assert_or_bail(pool_size) false;
-    
+
     //****TO-DO-MEMORY: allocate and initialize pool.
+    poolSize = pool_size;
+    memoryPool = malloc(poolSize);
+
+    head = (cat_malloc_metadata_t*)memoryPool;
+    head->p_next = NULL;
+    head->p_prev = NULL;
+    head->size = pool_size;
+    head->sequence = 0;
 
     return false;
 }
@@ -138,6 +156,15 @@ cat_impl bool cat_memory_pool_create(size_t const pool_size)
 cat_impl bool cat_memory_pool_destroy(void)
 {
     //****TO-DO-MEMORY: safely deallocate pool allocated above.
+
+    if (memoryPool != NULL)
+    {
+        free(memoryPool);
+        head = NULL;
+        poolSize = 0;
+
+        return true;
+    }
 
     return false;
 }
@@ -188,6 +215,20 @@ cat_noinl void cat_memory_test(void)
     block_lh = NULL;
     cat_free(block_rh);
     block_rh = NULL;
+
+    {
+        void* volatile testA = malloc(1024);
+        void* volatile testB = malloc(2028);
+        void* volatile testC = malloc(4096);
+        void* volatile testD = malloc(8192);
+
+        free(testA);
+        free(testB);
+        free(testC);
+        free(testD);
+    }
+
+    cat_memory_pool_create(1024);
 }
 
 
