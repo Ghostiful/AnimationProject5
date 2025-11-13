@@ -189,7 +189,7 @@ cat_impl void* cat_memory_alloc(size_t const block_size)
     
     // Insert at head of list
     newBlock->p_prev = NULL;
-    newBlock->p_next = head;
+    newBlock->p_next = newBlock != head ? head : NULL;
     newBlock->size = block_size;
     newBlock->sequence = blockNum++;
 
@@ -197,9 +197,9 @@ cat_impl void* cat_memory_alloc(size_t const block_size)
         head->p_prev = newBlock;
     head = newBlock;
 
-    memoryUsed += block_size;
+    memoryUsed += block_size + sizeof(cat_malloc_metadata_t);
 
-    return (void*)newBlock;
+    return (void*)(newBlock + 1);
 }
 
 cat_impl bool cat_memory_dealloc(void* const p_block)
@@ -208,38 +208,31 @@ cat_impl bool cat_memory_dealloc(void* const p_block)
 
     //****TO-DO-MEMORY: safely release block reserved above.
 
-    cat_malloc_metadata_t* blockToDealloc = head;
+    // Get metadata to dealloc
+    cat_malloc_metadata_t* blockToDealloc = (cat_malloc_metadata_t*)((char*)p_block - sizeof(cat_malloc_metadata_t));
 
-    while (blockToDealloc->p_next != NULL)
+    // Resolve block before
+    if (blockToDealloc->p_prev == NULL)
     {
-        // Get metadata
-        if (blockToDealloc == (cat_malloc_metadata_t*)p_block)
-        {
-            // Resolve block before
-            if (blockToDealloc->p_prev == NULL)
-            {
-                head = blockToDealloc->p_next;
-            }
-            else
-            {
-                blockToDealloc->p_prev->p_next = blockToDealloc->p_next;
-            }
-
-            // Resolve block after
-            if (blockToDealloc->p_next != NULL)
-            {
-                blockToDealloc->p_next->p_prev = blockToDealloc->p_prev;
-            }
-
-            memoryUsed -= blockToDealloc->size;
-
-            return true;
-        }
-
-        blockToDealloc = blockToDealloc->p_next;
+        head = blockToDealloc->p_next;
+    }
+    else
+    {
+        blockToDealloc->p_prev->p_next = blockToDealloc->p_next;
     }
 
-    return false;
+    // Resolve block after
+    if (blockToDealloc->p_next != NULL)
+    {
+        blockToDealloc->p_next->p_prev = blockToDealloc->p_prev;
+    }
+
+    memoryUsed -= blockToDealloc->size + sizeof(cat_malloc_metadata_t);
+
+    return true;
+     
+
+    //return false;
 }
 
 
@@ -284,18 +277,18 @@ cat_noinl void cat_memory_test(void)
     void* testB = cat_memory_alloc(512);
     printf("\nMade block A & B of sizes 128 & 512");
 
-    /*cat_memset(testA, 1, 128);
+    cat_memset(testA, 1, 128);
     cat_memset(testB, 2, 512);
-    printf("\nWrote to block A & B");*/
+    printf("\nWrote to block A & B");
 
-    void* testC = cat_memory_alloc(512);
-    printf("\nTry allocate block C of size 512: %s", testC != NULL ? "Success" : "Failed");
+    void* testC = cat_memory_alloc(400);
+    printf("\nTry allocate block C of size 400: %s", testC != NULL ? "Success" : "Failed");
 
     result = cat_memory_dealloc(testA);
     printf("\nDeallocated block A: %s", result ? "Success" : "Failed");
 
-    testC = cat_memory_alloc(512);
-    printf("\nTry allocate block C of size 512: %s", testC != NULL ? "Success" : "Failed");
+    testC = cat_memory_alloc(400);
+    printf("\nTry allocate block C of size 400: %s", testC != NULL ? "Success" : "Failed");
 
     result = cat_memory_dealloc(testB);
     printf("\nDeallocated block B: %s", result ? "Success" : "Failed");
