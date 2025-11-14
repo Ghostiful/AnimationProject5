@@ -75,7 +75,8 @@ cat_impl int cat_mngr_activate_thread(cat_thread_manager_t* p_thread_manager, ca
         {
             p_thread_manager->active[i] = p_thread_manager->inactive[i];
             p_thread_manager->inactive[i] = NULL;
-            return cat_thrd_create(p_thread_manager->active[i], p_thread_params);
+            p_thread_manager->results[i] = cat_thrd_create(p_thread_manager->active[i], p_thread_params);
+            return p_thread_manager->results[i];
             
         }
     }
@@ -90,7 +91,7 @@ cat_impl void cat_mngr_join_all_threads(cat_thread_manager_t* p_thread_manager)
     {
         if (p_thread_manager->active[i] != NULL)
         {
-            thrd_join(*p_thread_manager->active[i], &p_thread_manager->results[0]);
+            thrd_join(*p_thread_manager->active[i], &p_thread_manager->results[i]);
         }
     }
 }
@@ -176,7 +177,7 @@ cat_noinl void cat_thread_test(void)
 {
     thrd_t thrd = { 0 };
     int thrd_res = 0, thrd_res2 = 0, thrd_res3 = 0;
-    int print_count = 10000;
+    int print_count = 10000, print_count2 = 12000, print_count3 = 13000, print_count4 = 15000;
     void* const args[] = {
         &thrd,       // thread object
         __FUNCTION__,// thread name
@@ -201,9 +202,33 @@ cat_noinl void cat_thread_test(void)
         thrd_join(thrd, &thrd_res);
     }
     {
-        thrd_res = cat_mngr_activate_thread(&thread_manager, &params);
-        thrd_res2 = cat_mngr_activate_thread(&thread_manager, &params);
-        thrd_res3 = cat_mngr_activate_thread(&thread_manager, &params);
+        void* const args2[] = {
+        &thread_manager.inactive[0],       // thread object
+        __FUNCTION__,// thread name
+        &print_count2,// print count
+        };
+        cat_thread_params_t const params2 = {
+            &cat_thread_test_func, array_count(args2), args2
+        };
+        thrd_res = cat_mngr_activate_thread(&thread_manager, &params2);
+        void* const args3[] = {
+        &thread_manager.inactive[1],       // thread object
+        __FUNCTION__,// thread name
+        &print_count3,// print count
+        };
+        cat_thread_params_t const params3 = {
+            &cat_thread_test_func, array_count(args3), args3
+        };
+        thrd_res2 = cat_mngr_activate_thread(&thread_manager, &params3);
+        void* const args4[] = {
+        &thread_manager.inactive[2],       // thread object
+        __FUNCTION__,// thread name
+        &print_count4,// print count
+        };
+        cat_thread_params_t const params4 = {
+            &cat_thread_test_func, array_count(args4), args4
+        };
+        thrd_res3 = cat_mngr_activate_thread(&thread_manager, &params4);
         cat_mngr_join_all_threads(&thread_manager);
 
     }
