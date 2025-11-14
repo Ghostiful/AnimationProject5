@@ -49,9 +49,28 @@ cat_impl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t con
     return thrd_create(p_thread_out, &cat_thrd_internal_entry_point, (void*)p_thread_params);
 }
 
-cat_impl int cat_mngr_create(thrd_t* p_thread_arr[])
+cat_impl void cat_mngr_create(cat_thread_manager_t* p_thread_manager_out)
 {
+    p_thread_manager_out->active = (cat_thread_vector_t*)malloc(sizeof(cat_thread_vector_t));
+    p_thread_manager_out->active->data = NULL;
+    p_thread_manager_out->active->capacity = 0;
+    p_thread_manager_out->active->size = 0;
+    p_thread_manager_out->reactive = (cat_thread_vector_t*)malloc(sizeof(cat_thread_vector_t));
+    p_thread_manager_out->reactive->data = NULL;
+    p_thread_manager_out->reactive->capacity = 0;
+    p_thread_manager_out->reactive->size = 0;
+    p_thread_manager_out->num_threads = 0;
 
+}
+
+cat_impl int cat_mngr_create_thread(cat_thread_manager_t* p_thread_manager, thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params)
+{
+    assert_or_bail(p_thread_manager) thrd_error;
+    assert_or_bail(p_thread_params) thrd_error;
+    assert_or_bail(p_thread_out) thrd_error;
+
+    
+    return -1;
 }
 
 cat_impl bool cat_thread_rename(cstr_t const name)

@@ -41,11 +41,19 @@ typedef struct cat_thread_params_s
     void* const*      argv;//< Function argument vector.
 } cat_thread_params_t;
 
-#define MAX_THREADS 5
+typedef struct cat_thread_vector_s
+{
+    int* data;
+    size_t size;
+    size_t capacity;
+} cat_thread_vector_t;
+
 typedef struct cat_thread_manager_s
 {
-    thrd_t* active[MAX_THREADS];
-    thrd_t* inactive[MAX_THREADS];
+    cat_thread_vector_t* active;
+    cat_thread_vector_t* reactive;
+    size_t size;
+    int num_threads;
 } cat_thread_manager_t;
 
 //! \fn cat_thrd_create
@@ -55,7 +63,9 @@ typedef struct cat_thread_manager_s
 //! \return Thread handle; zero if failed.
 cat_decl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params);
 
-cat_decl int cat_mngr_create(thrd_t* p_thread_arr[]);
+cat_decl void cat_mngr_create(cat_thread_manager_t* p_thread_manager_out);
+
+cat_decl int cat_mngr_create_thread(cat_thread_manager_t* p_thread_manager, thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params);
 
 //! \fn cat_thread_rename
 //! \brief Rename current thread.
