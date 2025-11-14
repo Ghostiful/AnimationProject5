@@ -62,6 +62,8 @@ cat_decl void cat_mngr_create(cat_thread_manager_t* p_thread_manager_out);
 
 cat_decl int cat_mngr_activate_thread(cat_thread_manager_t* p_thread_manager, cat_thread_params_t const* const p_thread_params);
 
+cat_decl void cat_mngr_join_all_threads(cat_thread_manager_t* p_thread_manager);
+
 //! \fn cat_thread_rename
 //! \brief Rename current thread.
 //! \param name Name c-string.

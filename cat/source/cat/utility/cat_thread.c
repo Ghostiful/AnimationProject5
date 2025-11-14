@@ -51,9 +51,9 @@ cat_impl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t con
 
 cat_impl void cat_mngr_create(cat_thread_manager_t* p_thread_manager_out)
 {
-    for (int i = 0; i < MAX_THREADS; i++)
+    for (int i = 0; i < MAX_THREADS; ++i)
     {
-        thrd_t thread = { i };
+        thrd_t thread = { &i };
         p_thread_manager_out->inactive[i] = &thread;
         p_thread_manager_out->active[i] = NULL;
         p_thread_manager_out->results[i] = 0;
@@ -63,24 +63,36 @@ cat_impl void cat_mngr_create(cat_thread_manager_t* p_thread_manager_out)
 
 }
 
+__declspec(spectre(nomitigation))
 cat_impl int cat_mngr_activate_thread(cat_thread_manager_t* p_thread_manager, cat_thread_params_t const* const p_thread_params)
 {
     assert_or_bail(p_thread_manager) thrd_error;
     assert_or_bail(p_thread_params) thrd_error;
 
-    int i = 0;
-    for (; i < p_thread_manager->num_threads; i++)
+    for (int i = 0; i < p_thread_manager->num_threads; i++)
     {
         if (p_thread_manager->active[i] == NULL)
         {
             p_thread_manager->active[i] = p_thread_manager->inactive[i];
             p_thread_manager->inactive[i] = NULL;
-            p_thread_manager->results[i] = cat_thrd_create(p_thread_manager->active[i], p_thread_params);
-            return p_thread_manager->results[i];
+            return cat_thrd_create(p_thread_manager->active[i], p_thread_params);
+            
         }
     }
     
     return -1;
+}
+
+__declspec(spectre(nomitigation))
+cat_impl void cat_mngr_join_all_threads(cat_thread_manager_t* p_thread_manager)
+{
+    for (int i = 0; i < p_thread_manager->num_threads; i++)
+    {
+        if (p_thread_manager->active[i] != NULL)
+        {
+            thrd_join(*p_thread_manager->active[i], &p_thread_manager->results[0]);
+        }
+    }
 }
 
 cat_impl bool cat_thread_rename(cstr_t const name)
@@ -163,7 +175,7 @@ static int thrd_test_func(void* const arg)
 cat_noinl void cat_thread_test(void)
 {
     thrd_t thrd = { 0 };
-    int thrd_res = 0;
+    int thrd_res = 0, thrd_res2 = 0, thrd_res3 = 0;
     int print_count = 10000;
     void* const args[] = {
         &thrd,       // thread object
@@ -173,6 +185,9 @@ cat_noinl void cat_thread_test(void)
     cat_thread_params_t const params = {
         &cat_thread_test_func, array_count(args), args
     };
+
+    cat_thread_manager_t thread_manager;
+    cat_mngr_create(&thread_manager);
 
     cat_console_clear();
     {
@@ -185,6 +200,14 @@ cat_noinl void cat_thread_test(void)
         assert_or_bail(thrd_res == thrd_success);
         thrd_join(thrd, &thrd_res);
     }
+    {
+        thrd_res = cat_mngr_activate_thread(&thread_manager, &params);
+        thrd_res2 = cat_mngr_activate_thread(&thread_manager, &params);
+        thrd_res3 = cat_mngr_activate_thread(&thread_manager, &params);
+        cat_mngr_join_all_threads(&thread_manager);
+
+    }
+
     cat_platform_sleep(cat_platform_time_rate());
 }
 
