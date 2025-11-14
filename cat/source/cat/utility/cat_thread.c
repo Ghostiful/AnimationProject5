@@ -51,24 +51,34 @@ cat_impl int cat_thrd_create(thrd_t* const p_thread_out, cat_thread_params_t con
 
 cat_impl void cat_mngr_create(cat_thread_manager_t* p_thread_manager_out)
 {
-    p_thread_manager_out->active = (cat_thread_vector_t*)malloc(sizeof(cat_thread_vector_t));
-    p_thread_manager_out->active->data = NULL;
-    p_thread_manager_out->active->capacity = 0;
-    p_thread_manager_out->active->size = 0;
-    p_thread_manager_out->reactive = (cat_thread_vector_t*)malloc(sizeof(cat_thread_vector_t));
-    p_thread_manager_out->reactive->data = NULL;
-    p_thread_manager_out->reactive->capacity = 0;
-    p_thread_manager_out->reactive->size = 0;
-    p_thread_manager_out->num_threads = 0;
+    for (int i = 0; i < MAX_THREADS; i++)
+    {
+        thrd_t thread = { i };
+        p_thread_manager_out->inactive[i] = &thread;
+        p_thread_manager_out->active[i] = NULL;
+        p_thread_manager_out->results[i] = 0;
+    }
+    p_thread_manager_out->num_threads = MAX_THREADS;
+    
 
 }
 
-cat_impl int cat_mngr_create_thread(cat_thread_manager_t* p_thread_manager, thrd_t* const p_thread_out, cat_thread_params_t const* const p_thread_params)
+cat_impl int cat_mngr_activate_thread(cat_thread_manager_t* p_thread_manager, cat_thread_params_t const* const p_thread_params)
 {
     assert_or_bail(p_thread_manager) thrd_error;
     assert_or_bail(p_thread_params) thrd_error;
-    assert_or_bail(p_thread_out) thrd_error;
 
+    int i = 0;
+    for (; i < p_thread_manager->num_threads; i++)
+    {
+        if (p_thread_manager->active[i] == NULL)
+        {
+            p_thread_manager->active[i] = p_thread_manager->inactive[i];
+            p_thread_manager->inactive[i] = NULL;
+            p_thread_manager->results[i] = cat_thrd_create(p_thread_manager->active[i], p_thread_params);
+            return p_thread_manager->results[i];
+        }
+    }
     
     return -1;
 }
